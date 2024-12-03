@@ -2,6 +2,6 @@
 let's see how far I get this year
 
 ```
-gcc program.c -o program.out
+gcc -I.. ../utils.c program.c -o program.out
 program.out
 ```
