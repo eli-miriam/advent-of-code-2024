@@ -28,6 +28,7 @@ bool is_string_valid(char *string) {
 
     while (string[i] != '\0') {
         char ch = string[i];
+        i++;
         if (!char_is_valid(ch)) {
             return false;
         }
