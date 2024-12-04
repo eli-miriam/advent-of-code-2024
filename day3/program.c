@@ -112,27 +112,29 @@ int main(void) {
     char token[8191];
     int running_total = 0;
 
-    fread(input, sizeof(char), 65535, input_file);
+    char temp_char;
+    int input_length = 0;
+    while ((temp_char = fgetc(input_file)) != EOF)
+    {
+        input[input_length] = temp_char;
+        input_length++;
+    }
+    input[input_length] = '\0';
+    printf("%s", input);
 
     int input_index = 0;
     int token_index = 0;
     bool enabled = true;
-
-    while (input[input_index] != '\0') {
+    
+    while (input_index < input_length) {
         while (input[input_index] != 'm') {
-            /* Check for enablement commands */
             if (input[input_index] == 'd') {
-                /* We can treat this as ending our current token,
-                since 'd' is never a valid component of a mul command.
-                We don't reset the token index until another 'm'
-                has been found, though. */
 
                 token[token_index] = '\0';
                 int num = result_from_str(token);
                 if (enabled) {
                     running_total = running_total + num;
                 }
-                token[token_index] = input[input_index];
 
                 if ((input[input_index + 1] == 'o') &&
                     (input[input_index + 2] == 'n') &&
@@ -141,7 +143,6 @@ int main(void) {
                     (input[input_index + 5] == '(') &&
                     (input[input_index + 6] == ')')) {
                         enabled = false;
-                        token_index = 0;
                 }
                 if ((input[input_index + 1] == 'o') &&
                     (input[input_index + 2] == '(') &&
@@ -152,13 +153,11 @@ int main(void) {
                 input_index++;
             }
             else {
-                /* assess token for correctness */
                 token[token_index] = input[input_index];
                 token_index++;
                 input_index++;
             }
         }
-        /* if we're here, it's because a new 'm' was found.*/
         token[token_index] = '\0';
         int num = result_from_str(token);
         if (enabled) {
