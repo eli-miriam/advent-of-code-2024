@@ -176,7 +176,6 @@ int main(void) {
         }
         else {
             /* this is an update ordering. */
-            
             int list_length = (strlen(line) + 1) / 3;
             int median_index = list_length / 2;
             
@@ -184,7 +183,6 @@ int main(void) {
             consume the original with strtok */
             char copy_of_ordering[SCALE_VARIABLE];
             strcpy(copy_of_ordering, line);
-
             int list[SCALE_VARIABLE];
             int *int_ordering = get_int_list_from_ordering(copy_of_ordering, list);
 
