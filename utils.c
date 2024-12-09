@@ -21,3 +21,11 @@ int sign(int number) {
 int do_nothing() {
    return 0;
 }
+
+void print_array_of_long_longs(long long array[65535], int length) {
+   int i = 0;
+   for (i = 0; i < length; i++) {
+      printf(" %lld", array[i]);
+   }
+   printf("\n");
+}
