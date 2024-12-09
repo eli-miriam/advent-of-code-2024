@@ -5,8 +5,8 @@
 
 #include <utils.h>
 
-#define INPUT_FILE "weird.txt"
-#define SCALE_VARIABLE 16
+#define INPUT_FILE "input.txt"
+#define SCALE_VARIABLE 32
 
 
 int process_line_into_array(
@@ -26,89 +26,125 @@ int process_line_into_array(
     return array_length;
 }
 
-long long apply_multiplication_to_first_two_inputs(
-    long long input_list[SCALE_VARIABLE],
+bool could_last_op_be_multiplication(
     long long new_input_list[SCALE_VARIABLE],
+    long long input_list[SCALE_VARIABLE],
     int input_list_length
 ) {
-    long long num1 = input_list[0];
-    long long num2 = input_list[1];
+    long long required_output = input_list[0];
+    long long last_num = input_list[input_list_length -1];
 
-    new_input_list[0] = num1 * num2;
-    int i = 1;
-    for (i = 1; i < input_list_length - 1; i++) {
-        new_input_list[i] = input_list[i + 1];
+    if ((required_output % last_num) == 0) {
+        new_input_list[0] = required_output / last_num;
+        int i = 1;
+        for (i = 1; i < input_list_length - 1; i++) {
+            new_input_list[i] = input_list[i];
+        }
+        return true;
     }
-    return new_input_list[0];
-}   
 
-long long apply_addition_to_first_two_inputs(
-    long long input_list[SCALE_VARIABLE],
+    return false;
+}
+
+bool could_last_op_be_addition(
     long long new_input_list[SCALE_VARIABLE],
+    long long input_list[SCALE_VARIABLE],
     int input_list_length
 ) {
-    long long num1 = input_list[0];
-    long long num2 = input_list[1];
-
-    new_input_list[0] = num1 + num2;
-    int i = 1;
-    for (i = 1; i < input_list_length - 1; i++) {
-        new_input_list[i] = input_list[i + 1];
+    long long required_output = input_list[0];
+    long long last_num = input_list[input_list_length -1];
+    if ((required_output - last_num) >=0) {
+        new_input_list[0] = required_output - last_num;
+        int i = 1;
+        for (i = 1; i < input_list_length - 1; i++) {
+            new_input_list[i] = input_list[i];
+        }
+        return true;
     }
-    return new_input_list[0];
+    return false;
+}
+
+bool could_last_op_be_concatenation(
+    long long new_input_list[SCALE_VARIABLE],
+    long long input_list[SCALE_VARIABLE],
+    int input_list_length
+) {
+    long long required_output = input_list[0];
+    long long last_num = input_list[input_list_length -1];
+
+
+    char str[SCALE_VARIABLE];
+    sprintf(str, "%lld", last_num);
+    int last_num_length = strlen(str);
+
+    int must_divide_by = 10;
+    int i = 1;
+    while (i < last_num_length) {
+        must_divide_by = must_divide_by * 10;
+        i++;
+    }
+
+    long long diff = required_output - last_num;
+
+    if ((diff % must_divide_by) == 0) {
+        new_input_list[0] = diff / must_divide_by;
+        int i = 1;
+        for (i = 1; i < input_list_length - 1; i++) {
+            new_input_list[i] = input_list[i];
+        }
+        return true;
+    }
+    return false;
 }
 
 bool resolve_array(
     long long array[SCALE_VARIABLE], 
-    int array_length,
-    long long required_output
+    int array_length
 ) {
+    long long required_output = array[0];
 
-    //printf("\n");
-    //printf("Resolving array:\n");
-    //print_array_of_long_longs(array, array_length);
-    //printf("\n");
-
-    if (array_length < 2) {
-        //printf("Array cannot resolve.\n");
+    if (array_length < 3) {
         return false;
     }
+    printf("Resolving array:\n");
+    print_array_of_long_longs(array, array_length);
 
-    long long multiplication_output = 0;
-    long long try_multiplication_array[SCALE_VARIABLE];
-    multiplication_output = apply_multiplication_to_first_two_inputs(
-        array,
-        try_multiplication_array,
-        array_length
-    );
+    long long addition_array[SCALE_VARIABLE];
+    bool could_be_addition = could_last_op_be_addition(addition_array, array, array_length);
 
-    //printf("multiplication array:\n");
-    //print_array_of_long_longs(try_multiplication_array, array_length - 1);
+    long long multiplication_array[SCALE_VARIABLE];
+    bool could_be_multiplication = could_last_op_be_multiplication(multiplication_array, array, array_length);
 
-    long long addition_output = 0;
-    long long try_addition_array[SCALE_VARIABLE];
-    addition_output = apply_addition_to_first_two_inputs(
-        array,
-        try_addition_array,
-        array_length
-    );
-
-    //printf("addition array:\n");
-    //print_array_of_long_longs(try_addition_array, array_length - 1);
-
-    if ((multiplication_output == required_output) ||
-        (addition_output == required_output)) {
-        return true;
-    }
-    else if (array_length > 2) {
-        if ((resolve_array(try_multiplication_array, array_length - 1, required_output)) ||
-            (resolve_array(try_addition_array, array_length - 1, required_output))) {
-                return true;
-            }
-        else {
-            return false;
+    long long concatenation_array[SCALE_VARIABLE];
+    bool could_be_concatenation = could_last_op_be_concatenation(concatenation_array, array, array_length);
+    
+    if (could_be_addition) {
+        if (addition_array[0] == addition_array[1]) {
+            return true;
+        }
+        else if (resolve_array(addition_array, array_length -1)) {
+            return true;
         }
     }
+
+    if (could_be_multiplication) {
+        if (multiplication_array[0] == multiplication_array[1]) {
+            return true;
+        }
+        else if (resolve_array(multiplication_array, array_length -1)) {
+            return true;
+        }
+    }
+
+    if (could_be_concatenation) {
+        if (concatenation_array[0] == concatenation_array[1]) {
+            return true;
+        }
+        else if (resolve_array(concatenation_array, array_length - 1)) {
+            return true;
+        }
+    }
+
 
     return false;
 }
@@ -120,20 +156,14 @@ int main(void) {
     char line[512];
     while (fgets(line, 512, input_file)) {
         line[strcspn(line, "\n")] =0;
-        //printf("NEW OUTPUT CALCULATION: ------------------ %s\n", line);
+        printf("NEW OUTPUT CALCULATION: ------------------ %s\n", line);
 
         long long array[SCALE_VARIABLE] = {0};
         int array_length = process_line_into_array(line, array);
 
         long long number_under_test = array[0];
 
-        int i = 0;
-        for (i = 0; i < array_length; i++) {
-            array[i] = array[i+1];
-        }
-        array_length = array_length - 1;
-
-        if (resolve_array(array, array_length, number_under_test)) {
+        if (resolve_array(array, array_length)) {
             running_total += number_under_test;
         //printf("Running total: %lld\n", running_total);
         };
