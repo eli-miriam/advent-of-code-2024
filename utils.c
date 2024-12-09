@@ -17,3 +17,7 @@ int sign(int number) {
       return 0;
    }
 }
+
+int do_nothing() {
+   return 0;
+}
