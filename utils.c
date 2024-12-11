@@ -29,3 +29,11 @@ void print_array_of_long_longs(long long array[65535], int length) {
    }
    printf("\n");
 }
+
+void print_array_of_ints(int array[65535], int length) {
+   int i = 0;
+   for (i = 0; i < length; i++) {
+      printf(" %d", array[i]);
+   }
+   printf("\n");
+}
