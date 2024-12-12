@@ -25,7 +25,7 @@ int do_nothing() {
 void print_array_of_long_longs(long long array[65535], int length) {
    int i = 0;
    for (i = 0; i < length; i++) {
-      printf(" %lld", array[i]);
+      printf("%lld ", array[i]);
    }
    printf("\n");
 }
@@ -33,7 +33,7 @@ void print_array_of_long_longs(long long array[65535], int length) {
 void print_array_of_ints(int array[65535], int length) {
    int i = 0;
    for (i = 0; i < length; i++) {
-      printf(" %d", array[i]);
+      printf("%d ", array[i]);
    }
    printf("\n");
 }
@@ -44,4 +44,14 @@ void print_list_of_coordinates(int coords[65535][2], int length) {
         printf("(%d, %d) ", coords[i][0], coords[i][1]);
     }
     printf("\n");
+}
+
+int power(int base, int exp) {
+    int result = 1;
+    while(exp) 
+    {   
+        result = result * base; 
+        exp--; 
+    }
+    return result;
 }
