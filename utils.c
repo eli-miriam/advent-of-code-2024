@@ -37,3 +37,11 @@ void print_array_of_ints(int array[65535], int length) {
    }
    printf("\n");
 }
+
+void print_list_of_coordinates(int coords[65535][2], int length) {
+    int i = 0;
+    for (i = 0; i < length; i++) {
+        printf("(%d, %d) ", coords[i][0], coords[i][1]);
+    }
+    printf("\n");
+}
